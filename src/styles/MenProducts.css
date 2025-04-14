@@ -1,0 +1,191 @@
+.shop-page-container {
+  max-width: 1200px; /* یا عرض دلخواه شما */
+  margin: 0 auto;
+  padding: 20px 15px;
+  font-family: 'Vazirmatn', sans-serif; /* فونت مناسب فارسی */
+  direction: rtl; /* راست‌چین */
+  background-color: #f8f9fa; /* رنگ پس‌زمینه کلی صفحه مانند تصویر */
+}
+
+.breadcrumb-container {
+  margin-bottom: 25px;
+  padding: 10px 0;
+  border-bottom: 1px solid #e0e0e0;
+  font-size: 14px;
+}
+
+.page-content-container {
+  display: flex;
+  gap: 30px; /* فاصله بین ستون فیلتر و محتوا */
+}
+
+.filters-column {
+  width: 280px; /* عرض ثابت برای سایدبار فیلتر */
+  flex-shrink: 0; /* جلوگیری از کوچک شدن سایدبار */
+}
+
+.main-content-column {
+  flex-grow: 1; /* ستون محتوا فضای باقی‌مانده را بگیرد */
+}
+
+/* نوار ابزار */
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 10px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  flex-wrap: wrap; /* برای واکنش‌گرایی */
+  gap: 10px;
+}
+
+.sort-options {
+  display: flex;
+  align-items: center;
+  gap: 8px; /* فاصله بین دکمه‌های مرتب‌سازی */
+   flex-wrap: wrap;
+}
+.sort-label {
+  font-size: 14px;
+  color: #555;
+  margin-left: 8px; /* فاصله از اولین دکمه */
+}.sort-button {
+  background-color: transparent;
+  border: none;  /* border: 1px solid #ddd; */
+  padding: 6px 12px;
+  border-radius: 20px; /* گرد کردن دکمه‌ها */
+  cursor: pointer;
+  font-size: 13px;
+  color: #333;
+  transition: all 0.2s ease;
+}
+
+.sort-button:hover {
+  background-color: #f0f0f0;
+}
+
+.sort-button.active {
+  background-color: #e7f1ff; /* آبی خیلی کم‌رنگ */
+  color: #0d6efd; /* رنگ آبی اصلی */
+  font-weight: 600;
+}
+
+.product-count {
+    font-size: 13px;
+    color: #666;
+    margin-right: auto; /* انتقال به سمت چپ در حالت عادی */
+    padding-left: 10px;
+}
+
+
+/* گرید محصولات */
+.products-grid {
+  display: grid;
+  /* ستون‌ها بر اساس تصویر (حدود 4 ستون) */  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* تنظیم عرض کمینه کارت */
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+/* استایل برای حالت عدم وجود محصول */
+.no-products-found {
+  grid-column: 1 / -1; /* کل عرض گرید را بگیرد */
+  text-align: center;
+  padding: 40px 20px;
+  color: #777;
+  font-size: 16px;
+  background-color: #fff;
+  border-radius: 8px;
+}
+
+/* استایل اسکلت لودینگ */
+.product-card-skeleton {
+  background-color: #fff;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  padding: 10px;
+  overflow: hidden;
+}
+
+/* لینک فوتر */
+.footer-link {
+  text-align: center;
+  margin-top: 40px;
+  padding: 15px;
+  font-size: 14px;
+  color: #666;
+  border-top: 1px solid #eee;
+}
+/* دکمه بازگشت به بالا */
+.back-to-top {
+    position: fixed;
+    bottom: 20px;
+    left: 20px; /* تنظیم موقعیت در سمت چپ */
+    background-color: #0d6efd;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    z-index: 1000;
+    opacity: 0; /* مخفی در ابتدا */
+    transition: opacity 0.3s ease;
+}
+
+/* نمایش دکمه وقتی اسکرول می‌شود (نیاز به جاوااسکریپت دارد) */
+.back-to-top.visible {
+    opacity: 1;
+}
+
+.error-message {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+
+/* Media Query برای موبایل (مثال) */
+@media (max-width: 768px) {
+  .page-content-container {
+    flex-direction: column;  }
+
+  .filters-column {
+    width: 100%;
+    margin-bottom: 20px;
+  }
+   .toolbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+   .sort-options {
+        justify-content: center;
+        margin-bottom: 10px;
+    }
+    .product-count {
+        text-align: center;
+        margin: 0;
+        padding: 0;
+    }
+  .products-grid {
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); /* کارت‌های کوچکتر */
+      gap: 15px;
+  }
+    .back-to-top {
+        bottom: 15px;
+        left: 15px;
+        width: 35px;
+        height: 35px;
+        font-size: 16px;
+    }
+}

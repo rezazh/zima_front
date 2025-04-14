@@ -1,0 +1,30 @@
+/* src/styles/Pagination.css */
+
+.pagination-wrapper {
+  display: flex;
+  justify-content: center;
+  padding: 30px 0 15px 0; /* فاصله بالا و پایین */
+  direction: ltr; /* صفحه‌بندی معمولا چپ‌چین است */
+}
+
+/* استایل‌دهی به کامپوننت MuiPagination */
+.custom-pagination .MuiPaginationItem-root {
+  font-family: 'Vazirmatn', sans-serif; /* اطمینان از فونت فارسی */
+  font-size: 0.88rem;
+  min-width: 34px;
+  height: 34px;
+  border-radius: 6px; /* کمی گردی */
+  margin: 0 3px; /* کمی فاصله افقی */
+}.custom-pagination .MuiPaginationItem-ellipsis {
+    color: #adb5bd; /* رنگ نقطه‌ها */
+}
+
+/* می‌توانید رنگ دکمه فعال و هاور را هم سفارشی کنید */
+/*
+.custom-pagination .MuiPaginationItem-root.Mui-selected {
+  background-color: #0a58ca;
+}
+.custom-pagination .MuiPaginationItem-root:hover {
+  background-color: rgba(13, 110, 253, 0.08);
+}
+*/

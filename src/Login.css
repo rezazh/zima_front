@@ -1,0 +1,96 @@
+/* پس‌زمینه صفحه */
+.login-page {
+  background-image: url('images/background.jpg'); /* لینک عکس پس‌زمینه */
+  background-size: cover;
+  background-position: center;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* کانتینر لاگین */
+.login-container {
+  background: rgba(255, 255, 255, 0.9); /* پس‌زمینه سفید با شفافیت */
+  border-radius: 8px;
+  padding: 30px;
+  width: 400px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  text-align: center;
+}
+
+/* هدر لاگین */
+.login-header {
+  margin-bottom: 20px;
+}
+
+.login-logo {
+  width: 80px;
+  height: auto;
+  margin-bottom: 10px;
+}
+
+.login-header h2 {
+  font-size: 18px;
+  color: #333;
+  margin: 0;
+}
+
+/* استایل ورودی‌ها */
+.input-group {
+  margin-bottom: 15px;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+/* لینک فراموشی رمز عبور */
+.forgot-password {
+  margin-bottom: 15px;
+}
+
+.forgot-password a {
+  font-size: 12px;
+  color: #007bff;
+  text-decoration: none;
+}
+
+.forgot-password a:hover {
+  text-decoration: underline;
+}
+
+/* دکمه ورود */
+.login-button {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+  width: 100%;
+}
+
+.login-button:hover {
+  background-color: #0056b3;
+}
+
+/* اطلاعات پشتیبانی */
+.support-info {
+  margin-top: 20px;
+  font-size: 12px;
+  color: #555;
+}
+
+/* پیام موفقیت */
+.success {
+  color: green;
+  font-size: 14px;
+  margin-bottom: 15px;
+}

@@ -1,0 +1,179 @@
+/* src/styles/FilterSidebar.css */.filter-sidebar-container {
+  background-color: #ffffff;
+  border-radius: 12px; /* Rounded corners */
+  padding: 18px 22px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.07); /* Soft shadow */
+  border: 1px solid #e9ecef; /* Light border */
+  direction: rtl; /* Right-to-left */
+  box-sizing: border-box; /* Include padding and border in element's total width and height */
+}
+
+.filter-main-title {
+  margin-bottom: 25px !important;
+  text-align: right;
+  font-weight: 600 !important;
+  font-size: 1.15rem !important;
+  color: #343a40;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #f1f1f1;}
+
+.filter-section {
+  margin-bottom: 18px;
+}
+
+/* --- Accordion Styles --- */
+.filter-accordion {
+  box-shadow: none !important;
+  border: none !important;
+  margin: -5px 0 !important; /* Reduce space between accordions */
+  background-color: transparent !important;
+}
+.filter-accordion:before {
+  display: none; /* Remove default MUI top border */
+}
+.filter-accordion .MuiAccordionSummary-root {
+  min-height: 44px !important;  padding: 0 5px !important;
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
+}
+.filter-accordion .MuiAccordionSummary-root:hover {  background-color: #f8f9fa; /* Light background on hover */
+}
+.filter-accordion .MuiAccordionSummary-content {
+  margin: 10px 0 !important;
+  align-items: center; /* Align chip vertically */
+}
+.filter-accordion .MuiAccordionSummary-content .MuiTypography-root {
+  font-weight: 500 !important;
+  font-size: 0.95rem !important;
+  color: #495057;
+}
+.filter-accordion .MuiChip-root {
+  height: 20px;
+  font-size: 0.7rem;
+  margin-right: 8px; /* Space between title and chip */
+  background-color: #e9ecef;  color: #495057;
+}
+.filter-accordion .MuiAccordionDetails-root {
+  padding: 0px 8px 15px 8px !important; /* Adjust padding */
+}
+
+/* --- Search Input Styles --- */
+.search-input-field .MuiOutlinedInput-notchedOutline {
+  border-color: #ced4da;}
+.search-input-field:hover .MuiOutlinedInput-notchedOutline {
+  border-color: #adb5bd;
+}
+.search-input-field.Mui-focused .MuiOutlinedInput-notchedOutline {
+  border-color: #86b7fe; /* Focus color */
+  box-shadow: 0 0 0 2px rgba(13, 110, 253, 0.15);
+}
+
+/* --- Toggle Switch Styles --- */
+.toggle-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+  border-top: 1px solid #f1f1f1;  padding-top: 15px;
+}
+.toggle-section .MuiFormControlLabel-root {
+  justify-content: space-between; /* Label on right, switch on left */
+  margin-left: 0;
+  margin-right: 0;
+  padding: 4px 0;
+}
+.toggle-section .MuiFormControlLabel-label {
+  font-size: 0.9rem !important;
+  color: #495057;
+}
+/* Customize switch colors if needed */
+/*
+.toggle-section .MuiSwitch-switchBase.Mui-checked { color: #0d6efd !important; }
+.toggle-section .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track { background-color: #7cafff !important; }*/
+
+/* --- Checkbox List Styles --- */
+.filter-options-list {
+  max-height: 180px; /* Limit height for scroll */
+  overflow-y: auto;
+  padding-left: 6px; /* Space for scrollbar */
+}
+/* Style scrollbar */
+.filter-options-list::-webkit-scrollbar { width: 6px; }
+.filter-options-list::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
+.filter-options-list::-webkit-scrollbar-thumb { background: #ccc; border-radius: 10px; }
+.filter-options-list::-webkit-scrollbar-thumb:hover { background: #aaa; }
+
+.filter-checkbox-label .MuiFormControlLabel-label {
+  font-size: 0.88rem !important;
+  color: #495057;
+}
+.filter-checkbox-label .MuiCheckbox-root {
+  padding: 3px !important; /* Reduce checkbox padding */
+}
+
+/* --- Color Swatch Styles --- */
+.color-options-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px; /* Space between colors */
+  padding-top: 5px;
+  justify-content: flex-start; /* Align colors to the start */
+}
+.color-swatch {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 2px solid transparent; /* Transparent border */
+  cursor: pointer;
+  transition: all 0.25s ease-out;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+.color-swatch:hover {
+  transform: scale(1.1);
+  box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+}
+.color-swatch.selected {
+  border-color: #fff; /* White border when selected */
+  box-shadow: 0 0 0 3px #0d6efd, 0 2px 5px rgba(0,0,0,0.2); /* Blue outline */
+  transform: scale(1.05);
+}
+
+/* --- Price Filter Styles --- */
+.price-filter-details {
+  padding-top: 8px !important;
+}
+.price-inputs-container {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.price-input-field input {
+  text-align: center; /* Center align price number */
+  direction: ltr; /* Ensure numbers are LTR */
+}
+
+/* --- Action Button Styles --- */
+.filter-actions {
+  margin-top: 25px;
+  padding-top: 15px;
+  border-top: 1px solid #f1f1f1;
+  display: flex;
+  gap: 10px; /* Space between buttons */
+}
+.filter-actions .MuiButton-root {
+  flex-grow: 1; /* Make buttons take equal width */
+  padding: 8px 10px !important;
+  font-size: 0.85rem !important;
+  font-weight: 600 !important;
+  border-radius: 6px !important;
+}
+/* Primary Apply Button - Uses default MUI contained style */
+/* .apply-button {} */
+
+.clear-button {
+  color: #dc3545 !important; /* Red color */
+  border-color: rgba(220, 53, 69, 0.5) !important; /* Light red border */
+}
+.clear-button:hover {
+  background-color: rgba(220, 53, 69, 0.04) !important; /* Faint red background on hover */
+  border-color: #dc3545 !important; /* Stronger red border on hover */
+}

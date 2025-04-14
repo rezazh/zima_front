@@ -1,0 +1,175 @@
+/* تنظیمات عمومی */
+body {
+    font-family: "IRANSans", Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f9f9f9;
+    direction: rtl;
+  }
+  
+  .product-details {
+    max-width: 1200px;
+    margin: 50px auto;
+    padding: 20px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+  
+  /* گالری تصاویر */
+  .product-gallery {
+    flex: 1;
+    max-width: 50%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .product-gallery img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    object-fit: cover;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .thumbnail-gallery {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .thumbnail-gallery img {
+    width: 80px;
+    height: 80px;
+    border-radius: 4px;
+    cursor: pointer;
+    border: 1px solid #ddd;
+    object-fit: cover;
+  }
+  
+  .thumbnail-gallery img:hover {
+    border-color: #007bff;
+  }
+  
+  /* جزئیات محصول */
+  .product-info {
+    flex: 1;
+    max-width: 50%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .product-title {
+    font-size: 28px;
+    color: #333;
+    margin: 0;
+  }
+  
+  .product-price {
+    font-size: 20px;
+    color: #e91e63;
+    font-weight: bold;
+  }
+  
+  .old-price {
+    text-decoration: line-through;
+    color: #999;
+    margin-right: 10px;
+  }
+  
+  .product-description {
+    font-size: 16px;
+    color: #666;
+    line-height: 1.6;
+  }
+  
+  .product-attributes {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .product-attributes label {
+    font-size: 14px;
+    color: #333;
+  }
+  
+  .product-attributes select {
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    outline: none;
+  }
+  
+  .product-attributes select:focus {
+    border-color: #007bff;
+  }
+  
+  /* دکمه افزودن به سبد خرید */
+  .add-to-cart {
+    background-color: #007bff;
+    color: white;
+    padding: 12px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    text-align: center;
+  }
+  
+  .add-to-cart:hover {
+    background-color: #0056b3;
+  }
+  
+  /* محصولات مرتبط */
+  .related-products {
+    margin-top: 40px;
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .related-products h2 {
+    font-size: 22px;
+    color: #333;
+    margin-bottom: 20px;
+  }
+  
+  .related-products .product-list {
+    display: flex;
+    gap: 20px;
+  }
+  
+  .related-products .product-item {
+    background: #f9f9f9;
+    padding: 10px;
+    border-radius: 8px;
+    text-align: center;
+    flex: 1;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .related-products .product-item img {
+    width: 100%;
+    height: auto;
+    border-radius: 4px;
+    margin-bottom: 10px;
+  }
+  
+  .related-products .product-item h3 {
+    font-size: 16px;
+    color: #333;
+    margin: 0;
+  }
+  
+  .related-products .product-item .product-price {
+    font-size: 14px;
+    color: #e91e63;
+    margin-top: 5px;
+  }

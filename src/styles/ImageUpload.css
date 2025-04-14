@@ -1,0 +1,23 @@
+/* styles/ImageUpload.css */
+.image-upload {
+    margin: 1rem 0;
+  }
+  
+  .image-input {
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    width: 100%;
+  }
+  
+  .error-message {
+    color: #dc3545;
+    margin-top: 0.5rem;
+    font-size: 0.875rem;
+  }
+  
+  .loading {
+    color: #0066cc;
+    margin-top: 0.5rem;
+    font-size: 0.875rem;
+  }

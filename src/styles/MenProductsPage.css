@@ -1,0 +1,90 @@
+
+.shop-page-container {  padding-top: 10px !important; /* کاهش پدینگ بالا */
+    padding-bottom: 30px !important;
+    background-color: #f8f9fa; /* رنگ پس‌زمینه صفحه */
+    min-height: calc(100vh - 64px); /* حداقل ارتفاع (منهای ارتفاع هدر احتمالی) */
+    direction: rtl; /* راست‌چین */
+    font-family: 'Vazirmatn', 'Roboto', 'Helvetica', 'Arial', sans-serif; /* تنظیم فونت */
+  }
+  
+  /* --- Toolbar --- */
+  .toolbar {
+    display: flex;
+    flex-wrap: wrap; /* برای شکستن در صفحات کوچک */
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 15px;
+    background-color: #fff;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    border: 1px solid #dee2e6;
+  }
+  
+  .sort-options {
+    display: flex;
+    align-items: center;
+    gap: 6px; /* فاصله کمتر بین دکمه‌ها */
+    flex-wrap: wrap; /* شکستن دکمه‌ها در صورت نیاز */
+  }
+  
+  .sort-button {
+    padding: 4px 10px !important; /* پدینگ کمتر */
+    font-size: 0.75rem !important; /* فونت کوچکتر */
+    min-width: 60px !important; /* حداقل عرض */
+    border-radius: 15px !important; /* گردی بیشتر */
+    box-shadow: none !important;
+  }.sort-button.MuiButton-outlined {
+      border-color: #ced4da !important;
+      color: #495057 !important;
+  }
+  .sort-button.MuiButton-contained.active {
+      background-color: #0d6efd !important; /* آبی اصلی */
+  }.product-count {
+    font-size: 0.85rem;
+    color: #6c757d;
+    white-space: nowrap; /* جلوگیری از شکستن متن */
+    margin-top: 5px; /* کمی فاصله در حالت شکسته */
+    margin-bottom: 5px;
+  }
+  
+  
+  /* --- Products Grid --- */
+  .products-grid {
+    /* Grid container استایل خاصی نیاز ندارد، Grid item ها عرض را تعیین می‌کنند */
+  }
+  
+  /* --- Pagination --- */
+  .pagination-container {
+    display: flex;
+    justify-content: center;
+    padding: 30px 0 10px 0; /* فاصله بالا و پایین */
+  }
+  .pagination-container .MuiPaginationItem-root {
+      font-size: 0.85rem; /* سایز فونت دکمه‌های صفحه */
+      min-width: 30px;
+      height: 30px;
+  }
+  
+  /* --- Responsiveness --- */
+  @media (max-width: 900px) { /* md breakpoint of MUI */
+    .toolbar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }  .product-count {
+        align-self: flex-end; /* تعداد محصولات سمت چپ */
+    }
+  }
+  @media (max-width: 600px) { /* sm breakpoint of MUI */
+     .sort-options {
+         gap: 4px;
+     }
+     .sort-button {
+         padding: 3px 8px !important;
+         font-size: 0.7rem !important;
+     }
+     .products-grid .MuiGrid-item {
+         /* xs={6} باعث دو ستونه شدن می‌شود */
+     }
+  }
