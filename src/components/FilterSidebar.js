@@ -1,130 +1,116 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { Box, Typography, TextField, FormGroup, FormControlLabel, Checkbox, Button, Skeleton, Divider, Accordion, AccordionSummary, AccordionDetails, List, ListItemButton, ListItemText, Collapse, IconButton, Tooltip } from '@mui/material'; // <--- Tooltip اضافه شد
+import {
+    Box, Typography, TextField, FormGroup, FormControlLabel, Checkbox, Button,
+    Skeleton, Divider, Accordion, AccordionSummary, AccordionDetails, List,
+    ListItemButton, ListItemText, Collapse, IconButton, Tooltip // Ensure Tooltip is imported
+} from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import SearchIcon from '@mui/icons-material/Search';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import { Link as RouterLink, useParams } from 'react-router-dom';
-// import '../styles/FilterSidebar.css'; // <--- یا مسیر CSS مربوط به سایدبار اگر جداست
+// import '../styles/FilterSidebar.css'; // Import specific CSS if you have one
 
-// --- Helper Components (ColorSwatch, CategoryListItem) ---
-// (کد این کامپوننت‌های کمکی از پاسخ قبلی بدون تغییر باقی می‌ماند)
-// Color Swatch Component
-const ColorSwatch = ({ color, selected, onClick }) => (
-    <Tooltip title={color.name} placement="top"> {/* Tooltip حالا تعریف شده است */}
-        <Box            onClick={() => onClick(color.code)}
-            sx={{
-                width: 28,
-                height: 28,
-                borderRadius: '50%',
-                backgroundColor: color.code,
-                border: color.code === '#FFFFFF' ? '1px solid #ccc' : 'none',
-                cursor: 'pointer',
-                display: 'flex',                alignItems: 'center',
-                justifyContent: 'center',                transition: 'transform 0.1s ease-in-out',                '&:hover': { transform: 'scale(1.1)' },
-                outline: selected ? `2px solid ${color.code === '#000000' ? '#fff' : '#000'}` : 'none', // Contrast outline
-                outlineOffset: '2px',
-                boxShadow: selected ? '0 0 5px rgba(0,0,0,0.3)' : 'none',
-                m: 0.5, // Margin around swatch
-            }}
-        >
-            {selected && color.code !== '#FFFFFF' && (
-                 <CheckCircleIcon sx={{ fontSize: 16, color: '#fff', filter: 'drop-shadow(0 0 1px rgba(0,0,0,0.5))' }} />
-            )}             {selected && color.code === '#FFFFFF' && (
-                 <CheckCircleIcon sx={{ fontSize: 16, color: '#000', filter: 'drop-shadow(0 0 1px rgba(0,0,0,0.5))' }} />             )}
-        </Box>
-    </Tooltip>
-);
+// --- Helper Components ---
 
-// Recursive Category List Item
+// Recursive Category List Item Component
 const CategoryListItem = ({ category, level = 0, currentCategoryId }) => {
     const [open, setOpen] = useState(false); // State for expanding children
-    const hasChildren = category.children && category.children.length > 0;
-    // Check if the current category or one of its parents is the active category
-    const isActive = category.id === currentCategoryId; // Simple check for now
+    // Ensure category and category.id exist before accessing properties
+    const hasChildren = category?.children && category.children.length > 0;
+    // Compare IDs safely, converting to string if necessary
+    const isActive = category?.id?.toString() === currentCategoryId?.toString();
 
     const handleClick = (event) => {
-        if (hasChildren) {
-            event.preventDefault(); // Prevent navigation if it has children, just toggle
+        if (hasChildren) {            event.preventDefault(); // Prevent navigation, just toggle
             setOpen(!open);
         }
         // Navigation is handled by the Link component itself
     };
 
-    return (        <>
+    // Return null or a placeholder if category is invalid
+    if (!category || !category.id) {
+        console.warn("Invalid category data passed to CategoryListItem:", category);
+        return null;
+    }
+
+    return (
+        <>
             <ListItemButton
                 component={RouterLink}
-                to={`/category/${category.id}`} // Make sure your routes match this pattern
-                sx={{                    pl: 2 + level * 2, // Indentation
+                to={`/category/${category.id}`} // Ensure your app's routes match this pattern
+                sx={{
+                    pl: 2 + level * 2, // Indentation based on level
                     backgroundColor: isActive ? 'action.selected' : 'transparent',
                     borderRight: isActive ? '3px solid' : 'none',
                     borderRightColor: 'primary.main',
-                    py: 0.5, // Adjust padding
-                    '&:hover': {
-                        backgroundColor: 'action.hover'
-                    }
+                    py: 0.5, // Adjust vertical padding
+                    '&:hover': { backgroundColor: 'action.hover' }
                  }}
-                onClick={handleClick} // Handle toggle/navigation prevention
-                selected={isActive} // Highlight selected
-                dense
+                onClick={handleClick}
+                selected={isActive}
+                dense // Make items less tall
             >
-                <ListItemText primary={category.name} sx={{ '& .MuiListItemText-primary': { fontSize: '0.875rem', fontWeight: isActive ? 500 : 400 } }}/>
+                <ListItemText primary={category.name || 'بدون نام'} sx={{ '& .MuiListItemText-primary': { fontSize: '0.875rem', fontWeight: isActive ? 500 : 400 } }}/>
                 {hasChildren ? (open ? <RemoveIcon fontSize="small" /> : <AddIcon fontSize="small" />) : null}
             </ListItemButton>
             {hasChildren && (
                 <Collapse in={open} timeout="auto" unmountOnExit>
                     <List component="div" disablePadding>
                         {category.children.map((child) => (
-                            <CategoryListItem key={child.id} category={child} level={level + 1} currentCategoryId={currentCategoryId}/>
+                            // Ensure child is valid before rendering recursively
+                            child && child.id ? <CategoryListItem key={child.id} category={child} level={level + 1} currentCategoryId={currentCategoryId}/> : null
                         ))}
                     </List>
                 </Collapse>
             )}
         </>
     );
-};
-
-// --- Main Filter Sidebar ---
+};// --- Main Filter Sidebar Component ---
 const FilterSidebar = ({ categories = [], options, initialFilters, onApplyFilters, isLoading = false }) => {
-    // (State: localFilters, brandSearch, expandedAccordions از پاسخ قبلی)
-     const defaultFiltersState = useMemo(() => ({
-        brands: initialFilters?.brands || [],        colors: initialFilters?.colors || [],        sizes: initialFilters?.sizes || [],
-        features: initialFilters?.features || [],
-        price_min: initialFilters?.price_min || '',
-        price_max: initialFilters?.price_max || '',    }), [initialFilters]);
+    // --- State ---
+    // Define default structure clearly
+    const defaultFiltersState = useMemo(() => ({
+        brands: [], colors: [], sizes: [], features: [], price_min: '', price_max: '', search: ''    }), []);
 
-    const [localFilters, setLocalFilters] = useState(defaultFiltersState);
-    const [brandSearch, setBrandSearch] = useState(''); // State for brand search term
-    const [expandedAccordions, setExpandedAccordions] = useState({ // Control accordion expansion
-        price: true, // Keep price open by default maybe
-        brand: true, // Keep brand open too
-        color: true,
-        feature: false,
-        size: false,
+    // Initialize local state from initialFilters or default
+    const [localFilters, setLocalFilters] = useState(() => ({
+        ...defaultFiltersState,
+        ...(initialFilters || {}),
+        // Ensure array fields are arrays
+        brands: initialFilters?.brands || [],
+        colors: initialFilters?.colors || [],
+        sizes: initialFilters?.sizes || [],
+        features: initialFilters?.features || [],    }));
+
+    const [brandSearch, setBrandSearch] = useState('');
+    // Default expanded accordions
+    const [expandedAccordions, setExpandedAccordions] = useState({
+        price: true, brand: true, color: true, feature: false, size: false,
     });
 
-    const { categoryId: currentCategoryId } = useParams();
+    const { categoryId: currentCategoryId } = useParams(); // Get current category ID from URL
 
-    // Sync local state
-     useEffect(() => {        setLocalFilters({
+    // Sync local state when initialFilters (from URL) change
+    useEffect(() => {
+        setLocalFilters({
+            ...defaultFiltersState,
+            ...(initialFilters || {}),
             brands: initialFilters?.brands || [],
             colors: initialFilters?.colors || [],
             sizes: initialFilters?.sizes || [],
             features: initialFilters?.features || [],
-            price_min: initialFilters?.price_min || '',            price_max: initialFilters?.price_max || '',
         });
-    }, [initialFilters]);
+    }, [initialFilters, defaultFiltersState]);
 
     // --- Handlers ---
-    // (handleAccordionChange, handleCheckboxChange, handleColorSwatchClick, handlePriceChange, handleApplyClick, clearLocalFilters از پاسخ قبلی)
-     const handleAccordionChange = (panel) => (event, isExpanded) => {
+    const handleAccordionChange = (panel) => (event, isExpanded) => {
         setExpandedAccordions(prev => ({ ...prev, [panel]: isExpanded }));
     };
 
+    // Generic handler for checkbox groups (brands, colors, sizes, features)
     const handleCheckboxChange = (groupName, value) => {
         setLocalFilters(prev => {
             const currentGroup = prev[groupName] || [];
@@ -135,74 +121,87 @@ const FilterSidebar = ({ categories = [], options, initialFilters, onApplyFilter
         });
     };
 
-    const handleColorSwatchClick = (colorCode) => {
-        handleCheckboxChange('colors', colorCode); // Reuse checkbox logic for colors array
-    };
-
+    // Handler for price input changes
     const handlePriceChange = useCallback((event) => {
         const { name, value } = event.target;
+        // Allow empty string, otherwise only keep digits
         const numericValue = value === '' ? '' : value.replace(/[^0-9]/g, '');
         setLocalFilters(prev => ({ ...prev, [name]: numericValue }));
     }, []);
 
+    // Handler for search input (if used within sidebar)
+    const handleSearchChange = useCallback((event) => {
+        setLocalFilters(prev => ({ ...prev, search: event.target.value }));
+    }, []);
+
+    // Handler for Apply button click
     const handleApplyClick = useCallback(() => {
-        console.log("Sidebar Applying Filters:", localFilters);
-        onApplyFilters(localFilters);    }, [localFilters, onApplyFilters]);
+        onApplyFilters(localFilters); // Pass the current local state to parent
+    }, [localFilters, onApplyFilters]);
 
-    const clearLocalFilters = useCallback(() => {        setLocalFilters({ brands: [], colors: [], sizes: [], features: [], price_min: '', price_max: '' });
-        setBrandSearch(''); // Clear brand search as well
-        onApplyFilters({ brands: [], colors: [], sizes: [], features: [], price_min: '', price_max: '' });
-    }, [onApplyFilters]);
+    // Handler for Clear Filters button click
+    const clearLocalFilters = useCallback(() => {
+        setLocalFilters(defaultFiltersState); // Reset local state
+        setBrandSearch(''); // Reset brand search term
+        onApplyFilters(defaultFiltersState); // Apply cleared filters to parent
+    }, [onApplyFilters, defaultFiltersState]);
 
-
-    // Filter brands
+    // --- Memoized values ---
+    // Filter brands based on search term
     const filteredBrands = useMemo(() => {
-        if (!options?.brands) return [];
-        if (!brandSearch) return options.brands;
+        const brandOptions = options?.brands || [];
+        if (!brandSearch) return brandOptions;
         const searchLower = brandSearch.toLowerCase();
-        return options.brands.filter(brand => brand.toLowerCase().includes(searchLower));
+        return brandOptions.filter(brand => brand.toLowerCase().includes(searchLower));
     }, [options?.brands, brandSearch]);
 
     // --- Render ---
+    // Ensure options and localFilters are defined before accessing properties
     const safeOptions = options || { colors: [], sizes: [], brands: [], features: [] };
+    const safeLocalFilters = localFilters || defaultFiltersState;
 
-    // Helper to render Accordions
+    // Helper function to render Filter Accordions
     const renderFilterAccordion = (id, title, content) => (
          <Accordion
-            disableGutters
-            elevation={0}
-            square
-            sx={{ borderBottom: 1, borderColor: 'divider', '&:before': { display: 'none' }, bgcolor: 'transparent' }} // Transparent background
-            expanded={expandedAccordions[id]}
+            disableGutters elevation={0} square
+            sx={{ borderBottom: 1, borderColor: 'divider', '&:before': { display: 'none' }, bgcolor: 'transparent' }}
+            expanded={!!expandedAccordions[id]} // Use !! to ensure boolean
             onChange={handleAccordionChange(id)}
         >
             <AccordionSummary expandIcon={<ExpandMoreIcon />} sx={{ minHeight: '40px', '& .MuiAccordionSummary-content': { my: '8px' } }}>
                 <Typography sx={{ fontWeight: 500, fontSize: '0.95rem' }}>{title}</Typography>
             </AccordionSummary>
-            <AccordionDetails sx={{ p: 1 }}> {/* Reduced padding */}
-                {isLoading ? <Skeleton height={60}/> : content}
-            </AccordionDetails>        </Accordion>
-    );
-
-    return (
-        // Box styles can be applied via CSS class or sx
+            <AccordionDetails sx={{ p: 1 }}>
+                {/* Show skeleton only if loading AND content depends on options */}
+                 {isLoading && ['brand', 'color', 'size', 'feature'].includes(id) ? <Skeleton height={60} animation="wave"/> : content}
+            </AccordionDetails>
+        </Accordion>
+    );    return (
+        // Main container Box for the sidebar content
+        // className can be applied from parent or here if needed
         <Box className="filter-sidebar-content">
-             {/* Categories Section */}
-             {/* Wrap Categories in an Accordion maybe? Or just a Box */}
-             <Box mb={2}>
-                 <Typography variant="h6" sx={{ mb: 1, fontWeight: 600, fontSize: '1.0rem', px: 1 }}>
-                     دسته‌بندی‌ها
-                 </Typography>
-                 {isLoading && ( <> <Skeleton height={30}/> <Skeleton height={30}/> <Skeleton height={30}/> </> )}
-                 {!isLoading && categories.length > 0 && (
-                      <List dense component="nav" sx={{ width: '100%', bgcolor: 'transparent', p: 0 }}>
-                         {categories.map(cat => (
-                             <CategoryListItem key={cat.id} category={cat} currentCategoryId={currentCategoryId}/>
-                         ))}
-                     </List>
-                 )}
-                 {!isLoading && categories.length === 0 && ( <Typography variant="body2" color="text.secondary" sx={{px: 1}}>دسته بندی یافت نشد.</Typography> )}
-             </Box>
+            {/* Categories Section */}
+            <Box mb={2}>
+                <Typography variant="h6" sx={{ mb: 1, fontWeight: 600, fontSize: '1.0rem', px: 1 }}>
+                    دسته‌بندی‌ها
+                </Typography>
+                {/* Show skeletons if loading */}
+                {isLoading && (!categories || categories.length === 0) && (
+                    <> <Skeleton animation="wave" height={30}/> <Skeleton animation="wave" width="80%" height={30}/> <Skeleton animation="wave" width="60%" height={30}/> </>
+                )}
+                {/* Show categories list if not loading and categories exist */}
+                {!isLoading && categories && categories.length > 0 && (
+                    <List dense component="nav" sx={{ width: '100%', bgcolor: 'transparent', p: 0 }}>
+                        {categories.map(cat => (
+                            // Render CategoryListItem only if cat is valid
+                             cat && cat.id ? <CategoryListItem key={cat.id} category={cat} currentCategoryId={currentCategoryId}/> : null
+                        ))}
+                    </List>                )}
+                {/* Show message if not loading and no categories */}
+                {!isLoading && (!categories || categories.length === 0) && (
+                    <Typography variant="body2" color="text.secondary" sx={{px: 1}}>دسته بندی یافت نشد.</Typography>
+                )}
+            </Box>
 
             <Divider sx={{ my: 1 }} />
 
@@ -212,77 +211,80 @@ const FilterSidebar = ({ categories = [], options, initialFilters, onApplyFilter
             {/* Price Filter */}
             {renderFilterAccordion('price', 'محدوده قیمت', (
                 <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-                    <TextField label="از" variant="outlined" size="small" name="price_min" value={localFilters.price_min} onChange={handlePriceChange} InputProps={{ inputMode: 'numeric' }} sx={{ textAlign: 'center', '& input': {textAlign: 'center', p: '8.5px 5px'}, fontSize: '0.8rem' }} />
+                     <TextField label="از" variant="outlined" size="small" name="price_min" value={safeLocalFilters.price_min || ''} onChange={handlePriceChange} InputProps={{ inputMode: 'numeric' }} sx={{ textAlign: 'center', '& input': {textAlign: 'center', p: '8.5px 5px'}, fontSize: '0.8rem' }} />
                      <Typography sx={{color: 'text.secondary'}}>-</Typography>
-                    <TextField label="تا" variant="outlined" size="small" name="price_max" value={localFilters.price_max} onChange={handlePriceChange} InputProps={{ inputMode: 'numeric' }} sx={{ textAlign: 'center', '& input': {textAlign: 'center', p: '8.5px 5px'}, fontSize: '0.8rem' }} />
-                </Box>            ))}
+                     <TextField label="تا" variant="outlined" size="small" name="price_max" value={safeLocalFilters.price_max || ''} onChange={handlePriceChange} InputProps={{ inputMode: 'numeric' }} sx={{ textAlign: 'center', '& input': {textAlign: 'center', p: '8.5px 5px'}, fontSize: '0.8rem' }} />
+                 </Box>
+            ))}
 
-            {/* Brand Filter */}            {renderFilterAccordion('brand', 'برند', (
+            {/* Brand Filter */}
+            {renderFilterAccordion('brand', 'برند', (
                 <>
                     <TextField
-                        fullWidth                        variant="outlined"
-                        size="small"
-                        placeholder="جستجوی برند..."
-                        value={brandSearch}
-                        onChange={(e) => setBrandSearch(e.target.value)}
-                        InputProps={{ endAdornment: <IconButton size="small"><SearchIcon fontSize="small" /></IconButton>, sx:{pr: 0.5} }}
-                        sx={{ mb: 1 }}
+                        fullWidth variant="outlined" size="small" placeholder="جستجوی برند..."
+                        value={brandSearch} onChange={(e) => setBrandSearch(e.target.value)}
+                        InputProps={{ endAdornment: <IconButton size="small"><SearchIcon fontSize="small" /></IconButton>, sx:{pr: 0.5} }} sx={{ mb: 1 }}
                     />
-                    <FormGroup sx={{ maxHeight: 180, overflowY: 'auto', pr: 1, ml: -1 }}> {/* Scrollable & adjust margin */}
+                    <FormGroup sx={{ maxHeight: 180, overflowY: 'auto', pr: 1, ml: -1 }}>
                         {filteredBrands.map(brand => (
                             <FormControlLabel
                                 key={brand}
-                                control={<Checkbox checked={localFilters.brands.includes(brand)} onChange={() => handleCheckboxChange('brands', brand)} size="small" sx={{py: 0.2}} />}                                label={brand}
-                                sx={{ '& .MuiTypography-root': { fontSize: '0.875rem' } }}
-                            />
-                        ))}
-                         {filteredBrands.length === 0 && !isLoading && <Typography variant="body2" color="text.secondary" sx={{p:1}}>برندی یافت نشد.</Typography>}                    </FormGroup>
+                                control={<Checkbox checked={safeLocalFilters.brands?.includes(brand) || false} onChange={() => handleCheckboxChange('brands', brand)} size="small" sx={{py: 0.2}} />}
+                                label={brand} sx={{ '& .MuiTypography-root': { fontSize: '0.875rem' } }}
+                            />                        ))}
+                         {filteredBrands.length === 0 && !isLoading && <Typography variant="body2" color="text.secondary" sx={{p:1}}>برندی یافت نشد.</Typography>}
+                    </FormGroup>
                 </>
             ))}
 
-            {/* Color Filter */}            {renderFilterAccordion('color', 'رنگ', (
-                 <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'flex-start', alignItems: 'center', p: 0.5, ml: -0.5 }}>                     {safeOptions.colors.map(color => (
-                         <ColorSwatch
-                            key={color.code}
-                            color={color}                            selected={localFilters.colors.includes(color.code)}
-                            onClick={handleColorSwatchClick}
+            {/* Color Filter (Using Checkboxes for Names) */}
+            {renderFilterAccordion('color', 'رنگ', (
+                 <FormGroup sx={{ maxHeight: 180, overflowY: 'auto', pr: 1, ml: -1 }}>
+                    {(safeOptions.colors || []).map(colorName => (
+                        <FormControlLabel
+                            key={colorName}
+                            control={<Checkbox checked={safeLocalFilters.colors?.includes(colorName) || false} onChange={() => handleCheckboxChange('colors', colorName)} size="small" sx={{ py: 0.2 }} />}
+                            label={colorName} sx={{ '& .MuiTypography-root': { fontSize: '0.875rem' } }}
                         />
                     ))}
-                </Box>
+                     {(safeOptions.colors || []).length === 0 && !isLoading && <Typography variant="body2" color="text.secondary" sx={{p:1}}>رنگی یافت نشد.</Typography>}
+                 </FormGroup>
             ))}
 
-            {/* Features Filter */}
-             {renderFilterAccordion('feature', 'ویژگی‌ها', (
+             {/* Features Filter */}
+            {renderFilterAccordion('feature', 'ویژگی‌ها', (
                 <FormGroup sx={{ml: -1}}>
-                    {safeOptions.features.map(feature => (
+                    {(safeOptions.features || []).map(feature => (
                         <FormControlLabel
                             key={feature.id}
-                            control={<Checkbox checked={localFilters.features.includes(feature.id)} onChange={() => handleCheckboxChange('features', feature.id)} size="small" sx={{py: 0.2}} />}
-                            label={feature.label}
-                            sx={{ '& .MuiTypography-root': { fontSize: '0.875rem' } }}
+                            control={<Checkbox checked={safeLocalFilters.features?.includes(feature.id) || false} onChange={() => handleCheckboxChange('features', feature.id)} size="small" sx={{py: 0.2}} />}
+                            label={feature.label} sx={{ '& .MuiTypography-root': { fontSize: '0.875rem' } }}
                         />
                     ))}
+                     {/* Add message if no features defined */}
+                    {(safeOptions.features || []).length === 0 && !isLoading && <Typography variant="body2" color="text.secondary" sx={{p:1}}>ویژگی‌ای تعریف نشده.</Typography>}
                 </FormGroup>
             ))}
 
             {/* Size Filter */}
             {renderFilterAccordion('size', 'سایز', (
-                <FormGroup sx={{ maxHeight: 180, overflowY: 'auto', pr: 1, ml: -1 }}> {/* Scrollable & adjust margin */}
-                    {safeOptions.sizes.map(size => (
+                <FormGroup sx={{ maxHeight: 180, overflowY: 'auto', pr: 1, ml: -1 }}>
+                    {(safeOptions.sizes || []).map(size => (
                         <FormControlLabel
-                            key={size}                            control={<Checkbox checked={localFilters.sizes.includes(size)} onChange={() => handleCheckboxChange('sizes', size)} size="small" sx={{py: 0.2}} />}
-                            label={size}
-                            sx={{ '& .MuiTypography-root': { fontSize: '0.875rem' } }}
+                            key={size}
+                            control={<Checkbox checked={safeLocalFilters.sizes?.includes(size) || false} onChange={() => handleCheckboxChange('sizes', size)} size="small" sx={{py: 0.2}} />}
+                            label={size} sx={{ '& .MuiTypography-root': { fontSize: '0.875rem' } }}
                         />
                     ))}
-                </FormGroup>
-            ))}            {/* Action Buttons */}
-            <Box className="filter-actions" sx={{ mt: 2, p: 1 }}>
+                     {(safeOptions.sizes || []).length === 0 && !isLoading && <Typography variant="body2" color="text.secondary" sx={{p:1}}>سایزی یافت نشد.</Typography>}
+                 </FormGroup>
+            ))}
+
+            {/* Action Buttons */}            <Box className="filter-actions" sx={{ mt: 2, p: 1 }}>
                 <Button variant="contained" startIcon={<FilterAltIcon />} onClick={handleApplyClick} fullWidth sx={{ mb: 1, fontWeight: 600 }}>
                     اعمال فیلتر
                 </Button>
-                <Button variant="outlined" // Use outlined for clear
-                        startIcon={<RestartAltIcon />} onClick={clearLocalFilters} fullWidth color="secondary" size="small"> {/* Secondary color and smaller */}
+                <Button variant="outlined" startIcon={<RestartAltIcon />} onClick={clearLocalFilters} fullWidth color="secondary" size="small">
                     حذف همه فیلترها
                 </Button>
             </Box>
