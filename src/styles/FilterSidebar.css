@@ -177,3 +177,63 @@
   background-color: rgba(220, 53, 69, 0.04) !important; /* Faint red background on hover */
   border-color: #dc3545 !important; /* Stronger red border on hover */
 }
+
+/* src/styles/FilterSidebar.css */
+
+.filter-sidebar-container {
+  /* Using Paper and sx prop in MenProducts.js now */
+  /* padding: 16px; */
+  /* border: 1px solid #e0e0e0; */
+  /* border-radius: 8px; */
+  /* background-color: #fff; */
+}
+
+.filter-sidebar-content {
+   /* Styles for the content box inside the Paper */
+}
+
+.filter-main-title {
+ /* sx prop used in component now */
+ /* margin-bottom: 16px !important; */
+ /* font-weight: 600 !important; */  /* border-bottom: 1px solid #eee; */
+ /* padding-bottom: 8px; */
+}
+
+.filter-section {
+ /* sx prop used for margin-bottom now */
+ /* margin-bottom: 20px; */
+}
+
+.price-inputs-container {
+ /* sx prop used for display:flex and gap now */
+ /* display: flex; */
+ /* gap: 8px; */
+ /* align-items: center; */
+}
+
+.price-input-field input {
+ text-align: center; /* Center price text */
+}
+
+.filter-switch-label .MuiTypography-root {
+  /* sx prop used now */
+  /* font-size: 0.9rem; /* Slightly smaller label text */
+}
+
+.filter-actions {
+ /* sx prop used for margin-top now */
+ /* margin-top: 24px; */
+}
+
+.apply-button {
+ /* sx prop used for margin-bottom now */
+ /* margin-bottom: 8px !important; */
+}
+
+.clear-button {
+ /* Styles for clear button if needed beyond variant/color */
+}
+
+/* Specific Autocomplete styling if needed */
+.autocomplete-section .MuiAutocomplete-root {  /* Custom styles for Autocomplete */
+}

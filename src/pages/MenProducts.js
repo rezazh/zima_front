@@ -1,175 +1,301 @@
-// src/pages/MenProducts.js (یا src/components/MenProducts.js)
-import React, { useState, useEffect, useCallback } from 'react';import axios from 'axios';
-import { Container, Grid, Box, Typography, Breadcrumbs, Link as MuiLink, Pagination as MuiPagination, CircularProgress, Alert, Button, Skeleton } from '@mui/material';
-import { Link as RouterLink } from 'react-router-dom';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { Container, Grid, Box, Typography, Button, Alert, Breadcrumbs, Link as MuiLink, Pagination as MuiPagination, Skeleton, Paper, Select, MenuItem, FormControl, InputLabel, IconButton } from '@mui/material'; // Import components used
+import { Link as RouterLink, useLocation, useNavigate, useParams } from 'react-router-dom';
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward'; // Icon for back-to-top
+// *** IMPORT FROM PLACEHOLDER FILE ***
+import { getMenProducts, getFilterOptions, getCategories } from '../services/apiService_placeholder'; // Ensure this path is correct
+import FilterSidebar from '../components/FilterSidebar'; // Ensure this path is correct
+import ProductCard from '../components/ProductCard'; // Ensure this path is correct
+import '../styles/MenProducts.css'; // <--- استفاده از فایل CSS شما
 
-// مسیرها را بر اساس محل فایل MenProducts.js تنظیم کنید
-import FilterSidebar from '../components/FilterSidebar'; // Adjust path if needed
-import ProductCard from '../components/ProductCard';     // Adjust path if needed
-import '../styles/MenProducts.css'; // Adjust path if needed
+const PRODUCTS_PER_PAGE = 16; // تعداد محصولات در هر صفحه
 
-const API_BASE_URL = 'http://127.0.0.1:8000/api';const PRODUCTS_PER_PAGE = 12;
-
-const MenProducts = () => {
-  const [products, setProducts] = useState([]);  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  // **مهم:** مقدار اولیه filterOptions باید یک آبجکت باشد تا از خطا جلوگیری شود
-  const [filterOptions, setFilterOptions] = useState({ colors: [], sizes: [], brands: [] });
-  const [sortBy, setSortBy] = useState('newest');
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [totalProducts, setTotalProducts] = useState(0);
-
-  const [appliedFilters, setAppliedFilters] = useState({
-    search: '', sizes: [], colors: [], brands: [],
-    price_min: '', price_max: '', inStock: false, menOnly: true,
-  });
-
-  // --- API Call: Fetch Filter Options ---
-  const fetchFilterOptions = useCallback(async () => {
-    try {
-      const response = await axios.get(`${API_BASE_URL}/filter-options/`);
-      // **اشکال زدایی:** بررسی داده‌های دریافتی
-      console.log("Fetched filter options:", response.data);
-      setFilterOptions({
-        // حتما مطمئن شوید که API آرایه‌ها را برمی‌گرداند
-        sizes: Array.isArray(response.data.sizes) ? response.data.sizes : [],
-        colors: Array.isArray(response.data.colors) ? response.data.colors : [],
-        brands: Array.isArray(response.data.brands) ? response.data.brands : [],
-      });
-    } catch (err) {
-      console.error('Error fetching filter options:', err);
-      setError('خطا در دریافت گزینه‌های فیلتر.');
-    }
-  }, []);
-
-  // --- API Call: Fetch Products based on Applied Filters ---
-  const fetchProducts = useCallback(async () => {
-    // ... (کد fetchProducts بدون تغییر باقی می‌ماند - همان کد پاسخ قبلی) ...
-    setLoading(true);
-    setError(null);
-    const params = { /* ... پارامترها بر اساس appliedFilters ... */        page: currentPage,
-        page_size: PRODUCTS_PER_PAGE,
-        sort: sortBy,
-        ...(appliedFilters.search && { search: appliedFilters.search }),
-        ...(appliedFilters.inStock && { in_stock: 'true' }),
-        ...(appliedFilters.menOnly && { /* پارامتر مربوط به مردانه در بک‌اند */ }),
-        ...(appliedFilters.price_min && { price_min: appliedFilters.price_min }),
-        ...(appliedFilters.price_max && { price_max: appliedFilters.price_max }),
-        ...(appliedFilters.colors.length > 0 && { color: appliedFilters.colors.join(',') }),        ...(appliedFilters.sizes.length > 0 && { size: appliedFilters.sizes.join(',') }),
-        ...(appliedFilters.brands.length > 0 && { brand: appliedFilters.brands.join(',') }),    };
-    console.log("Fetching products with params:", params);
-    try {
-      const response = await axios.get(`${API_BASE_URL}/products/men/`, { params });
-      setProducts(response.data.results || []);
-      const count = response.data.count || 0;
-      setTotalProducts(count);
-      const receivedPageSize = response.data.page_size || PRODUCTS_PER_PAGE;
-      setTotalPages(Math.ceil(count / receivedPageSize));
-    } catch (err) {
-      console.error('Error fetching products:', err);
-      setError('خطا در بارگذاری محصولات. لطفاً دوباره تلاش کنید.');
-      setProducts([]); setTotalProducts(0); setTotalPages(1);
-    } finally {
-      setLoading(false);
-    }
-  }, [currentPage, sortBy, appliedFilters]);
-
-  // --- Effects ---
-  useEffect(() => {
-    fetchFilterOptions();
-  }, [fetchFilterOptions]);
-
-  useEffect(() => {
-    fetchProducts();
-    window.scrollTo(0, 0);
-  }, [fetchProducts]);
-
-  // --- Handlers ---
-  const handleApplyFilters = useCallback((newFiltersFromSidebar) => {
-    setAppliedFilters(newFiltersFromSidebar);
-    setCurrentPage(1);
-  }, []);  const handleSortChange = (newSortBy) => {
-    // ... (بدون تغییر) ...
-    if (sortBy !== newSortBy) {
-        setSortBy(newSortBy);
-        setCurrentPage(1);
-    }  };
-
-  const handlePageChange = (event, value) => {
-    // ... (بدون تغییر) ...
-    setCurrentPage(value);
-  };
-
-  const sortButtons = [ /* ... (بدون تغییر) ... */
-    { value: 'newest', label: 'جدیدترین' },    { value: 'popular', label: 'محبوب‌ترین' },
-    { value: 'price_asc', label: 'ارزان‌ترین' },
-    { value: 'price_desc', label: 'گران‌ترین' },
+const sortOptions = [
+    { label: 'جدیدترین', value: 'newest' },
+    { label: 'پربازدیدترین', value: 'most_visited' },
+    { label: 'ارزان‌ترین', value: 'price_asc' },
+    { label: 'گران‌ترین', value: 'price_desc' }
 ];
 
-  // --- Render ---
-  return (
-    // **مهم:** استفاده از Container برای مدیریت عرض کلی صفحه
-    <Container maxWidth="xl" className="shop-page-container">
-      {/* Breadcrumbs */}
-      <Breadcrumbs aria-label="breadcrumb" sx={{ mb: 3, mt: 2 }}>
-        <MuiLink component={RouterLink} underline="hover" color="inherit" to="/"> خانه </MuiLink>        <Typography color="text.primary">پوشاک مردانه</Typography>
-      </Breadcrumbs>
+const defaultFiltersState = {
+    brands: [], colors: [], sizes: [], features: [], price_min: '', price_max: '',};
 
-      {/* **مهم:** استفاده از Grid container برای ستون‌بندی */}
-      <Grid container spacing={3}>
-        {/* ستون سایدبار فیلتر */}
-        {/* **مهم:** تعیین عرض ستون برای اندازه‌های مختلف صفحه */}
-        <Grid item xs={12} sm={4} md={3} lg={2.5}>
-          <FilterSidebar
-            // **مهم:** پاس دادن filterOptions به prop options
-            options={filterOptions}
-            initialFilters={appliedFilters}
-            onApplyFilters={handleApplyFilters}          />
-        </Grid>
+const MenProducts = () => {
+    // --- State (مانند قبل) ---
+    const [products, setProducts] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [categories, setCategories] = useState([]);
+    const [filterOptions, setFilterOptions] = useState({ colors: [], sizes: [], brands: [], features: [] });
+    const [appliedFilters, setAppliedFilters] = useState(defaultFiltersState);
+    const [sortBy, setSortBy] = useState('newest');
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [totalProducts, setTotalProducts] = useState(0);
+    const [showScroll, setShowScroll] = useState(false); // State for back-to-top button
 
-        {/* ستون محتوای اصلی */}
-        {/* **مهم:** تعیین عرض ستون برای گرفتن فضای باقی‌مانده */}
-        <Grid item xs={12} sm={8} md={9} lg={9.5}>
-          {/* Toolbar */}
-          <Box className="toolbar">
-            {/* ... (کد Toolbar بدون تغییر) ... */}
-            <Box className="sort-options">
-                <Typography variant="body2" sx={{ ml: 1, color: 'text.secondary', whiteSpace: 'nowrap' }}>مرتب‌سازی:</Typography>
-                {sortButtons.map(button => ( <Button key={button.value} size="small" variant={sortBy === button.value ? 'contained' : 'outlined'} onClick={() => handleSortChange(button.value)} className={`sort-button ${sortBy === button.value ? 'active' : ''}`} > {button.label} </Button> ))}
+    // --- Hooks (مانند قبل) ---
+    const location = useLocation();
+    const navigate = useNavigate();
+    const { categoryId } = useParams();
+
+    // --- Functions (parseQueryParams, updateQueryParams - مانند قبل) ---
+    // Function to parse query params for filters, sort, page
+    const parseQueryParams = useCallback(() => {
+        const params = new URLSearchParams(location.search);
+        const filters = { ...defaultFiltersState };
+        filters.brands = params.getAll('brand');        filters.colors = params.getAll('color');
+        filters.sizes = params.getAll('size');
+        filters.features = params.getAll('feature');
+        filters.price_min = params.get('price_min') || '';
+        filters.price_max = params.get('price_max') || '';
+        const currentPageFromUrl = parseInt(params.get('page') || '1', 10);
+        const currentSortByFromUrl = params.get('sortBy') || 'newest';
+        setAppliedFilters(filters);
+        setSortBy(currentSortByFromUrl);
+        setCurrentPage(currentPageFromUrl);
+        return { filters, sortBy: currentSortByFromUrl, page: currentPageFromUrl };
+    }, [location.search]);
+
+    // Function to update URL query params
+    const updateQueryParams = useCallback((newFilters, newSortBy, newPage) => {
+        const params = new URLSearchParams();
+        newFilters.brands?.forEach(b => params.append('brand', b));
+        newFilters.colors?.forEach(c => params.append('color', c));
+        newFilters.sizes?.forEach(s => params.append('size', s));        newFilters.features?.forEach(f => params.append('feature', f));
+        if (newFilters.price_min) params.set('price_min', newFilters.price_min);
+        if (newFilters.price_max) params.set('price_max', newFilters.price_max);        if (newSortBy && newSortBy !== 'newest') params.set('sortBy', newSortBy);
+        if (newPage && newPage > 1) params.set('page', newPage);
+        navigate(`${location.pathname}?${params.toString()}`, { replace: true });
+    }, [navigate, location.pathname]);
+
+    // --- Effects ---
+    // Fetch categories and filter options once on mount (مانند قبل)
+    useEffect(() => {
+        let isMounted = true;
+        const fetchInitialData = async () => {
+            try {
+                setLoading(true);
+                const [cats, options] = await Promise.all([
+                    getCategories(),
+                    getFilterOptions(categoryId || 'men')
+                ]);
+                if (isMounted) {
+                    setCategories(cats || []);
+                    setFilterOptions(options || { colors: [], sizes: [], brands: [], features: [] });
+                }
+            } catch (err) {
+                console.error("Failed fetch initial data:", err);
+                if (isMounted) setError("خطا در دریافت اطلاعات اولیه.");
+            }
+        };
+        fetchInitialData();
+        return () => { isMounted = false; };
+    }, [categoryId]);
+
+    // Fetch products when URL query string or categoryId changes (مانند قبل)
+    useEffect(() => {
+        let isMounted = true;
+        if (!categories.length && !filterOptions.colors.length && !filterOptions.brands.length) {             // If initial data isn't loaded, don't fetch products yet
+             // Keep loading as true until initial data OR products are fetched
+             setLoading(true);
+             return;
+        }
+
+        const { filters, sortBy: currentSortBy, page } = parseQueryParams();
+        const fetchProducts = async () => {            // Ensure loading is true *before* async call
+            if(isMounted) setLoading(true);            setError(null);
+            try {
+                const apiParams = { ...filters, page, limit: PRODUCTS_PER_PAGE, sortBy: currentSortBy, category: categoryId };
+                const response = await getMenProducts(apiParams);
+                if (isMounted) {
+                    if (response?.data) {
+                        setProducts(response.data);
+                        setTotalPages(response.totalPages);
+                        setTotalProducts(response.totalItems);
+                    } else { throw new Error("ساختار پاسخ محصولات نامعتبر است."); }
+                }
+            } catch (err) {
+                console.error("Failed fetch products:", err);
+                if (isMounted) {
+                    setError(err.message || "خطا در دریافت محصولات.");
+                    setProducts([]); setTotalPages(1); setTotalProducts(0);
+                }
+            } finally {
+                // Set loading false only if the component is still mounted
+                 if (isMounted) setLoading(false);
+            }
+        };
+        fetchProducts();
+        return () => { isMounted = false; };
+    }, [location.search, categoryId, categories, filterOptions, parseQueryParams]);
+
+    // Effect for back-to-top button visibility
+    useEffect(() => {
+        const checkScrollTop = () => {
+            if (!showScroll && window.pageYOffset > 400){
+                setShowScroll(true);            } else if (showScroll && window.pageYOffset <= 400){
+                setShowScroll(false);
+            }
+        };        window.addEventListener('scroll', checkScrollTop);
+        return () => window.removeEventListener('scroll', checkScrollTop);
+    }, [showScroll]);
+
+
+    // --- Handlers (handleApplyFilters, handleSortChange, handlePageChange - مانند قبل) ---
+     const handleApplyFilters = useCallback((newFilters) => {
+        updateQueryParams(newFilters, sortBy, 1);
+    }, [sortBy, updateQueryParams]);
+
+    const handleSortChange = useCallback((event) => {
+        const newSortValue = event.target.value;
+        updateQueryParams(appliedFilters, newSortValue, 1);
+    }, [appliedFilters, updateQueryParams]);
+
+    const handlePageChange = useCallback((event, newPage) => {
+        updateQueryParams(appliedFilters, sortBy, newPage);
+        // window.scrollTo({ top: 0, behavior: 'smooth' }); // CSS handles smooth scroll now potentially
+        window.scrollTo(0, 0); // Instant scroll
+    }, [appliedFilters, sortBy, updateQueryParams]);    const scrollTop = () =>{
+        window.scrollTo({top: 0, behavior: 'smooth'});
+    };
+
+    // --- Memos (sidebarOptions, sidebarCategories, currentCategoryName - مانند قبل) ---
+    const sidebarOptions = useMemo(() => filterOptions, [filterOptions]);
+    const sidebarCategories = useMemo(() => categories, [categories]);
+    const currentCategoryName = useMemo(() => {
+        const findCategoryName = (cats, id) => {
+            for (const cat of cats) {
+                if (cat.id === id) return cat.name;
+                if (cat.children) {
+                    const found = findCategoryName(cat.children, id);
+                    if (found) return found;
+                }
+            } return null;
+        };
+        return categoryId ? findCategoryName(categories, categoryId) : "پوشاک مردانه";
+    }, [categories, categoryId]);
+
+    // --- Render ---
+    return (
+        // Apply the main container class from your CSS
+        <Container maxWidth={false} className="shop-page-container">
+            {/* Breadcrumbs */}
+            <Box className="breadcrumb-container"> {/* Use class from CSS */}
+                 <Breadcrumbs aria-label="breadcrumb" separator="›" sx={{ fontSize: 'inherit' }}>
+                    <MuiLink component={RouterLink} underline="hover" color="inherit" to="/">
+                        خانه
+                    </MuiLink>
+                    {/* Add logic here if you have nested categories */}
+                    <Typography color="text.primary" sx={{ fontSize: 'inherit' }}>{currentCategoryName || 'محصولات'}</Typography>
+                </Breadcrumbs>
             </Box>
-            <Typography variant="body2" className="product-count"> {totalProducts} کالا </Typography>
-          </Box>          {/* Loading Indicator */}
-          {loading && ( /* ... (کد Skeleton بدون تغییر) ... */
-            <Grid container spacing={2} sx={{ mt: 1 }}> {Array.from({ length: PRODUCTS_PER_PAGE }).map((_, index) => ( <Grid item key={`skeleton-${index}`} xs={6} sm={4} lg={3} xl={2.4}> <Skeleton variant="rectangular" height={180} animation="wave" /> <Skeleton variant="text" width="80%" animation="wave" sx={{ mt: 1 }}/> <Skeleton variant="text" width="40%" animation="wave" /> </Grid> ))} </Grid>
-          )}
 
-          {/* Error Message */}
-          {!loading && error && ( /* ... (کد Alert بدون تغییر) ... */            <Alert severity="error" sx={{ m: 2 }}>{error}</Alert>
-          )}
+            {/* Main Layout Container */}
+            <Box className="page-content-container"> {/* Use class from CSS */}
 
-          {/* Products Grid & Pagination */}
-          {!loading && !error && (
-            <>
-              {products.length > 0 ? (
-                <Grid container spacing={2} className="products-grid">
-                  {/* ... (map روی products و رندر ProductCard بدون تغییر) ... */
-                    products.map(product => ( <Grid item key={product.id} xs={6} sm={4} lg={3} xl={2.4}> <ProductCard product={product} /> </Grid> ))
-                  }
-                </Grid>
-              ) : (
-                <Box sx={{ textAlign: 'center', p: 5, minHeight: '300px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}> <Typography color="text.secondary">محصولی با فیلترهای انتخابی یافت نشد.</Typography> </Box>
-              )}
+                {/* Filter Sidebar Column */}
+                <Box className="filters-column"> {/* Use class from CSS */}
+                    {/* No Paper needed if CSS provides background/border */}
+                    <FilterSidebar
+                        categories={sidebarCategories}
+                        options={sidebarOptions}
+                        initialFilters={appliedFilters}
+                        onApplyFilters={handleApplyFilters}
+                        isLoading={loading && (!categories.length || !filterOptions.colors.length)} // More accurate loading
+                    />
+                </Box>
 
-              {/* Pagination */}
-              {totalPages > 1 && ( /* ... (کد Pagination بدون تغییر) ... */                <Box className="pagination-container"> <MuiPagination count={totalPages} page={currentPage} onChange={handlePageChange} color="primary" shape="rounded" siblingCount={1} boundaryCount={1} /> </Box>
-              )}
-            </>
-          )}
-        </Grid> {/* End Main Content Column */}
-      </Grid> {/* End Main Grid Container */}
-    </Container> // End Page Container
-  );
-};
+                {/* Main Content Column */}
+                <Box className="main-content-column"> {/* Use class from CSS */}
+                    {/* Toolbar */}
+                    <Box className="toolbar"> {/* Use class from CSS */}
+                         {/* Product Count */}
+                         <Typography className="product-count">
+                             {loading ? 'درحال بارگذاری...' : `${totalProducts} کالا`}
+                         </Typography>
+                         {/* Sort Select Dropdown */}
+                         <FormControl sx={{ m: 0, minWidth: 160 }} size="small">
+                             <InputLabel id="sort-by-label" sx={{fontSize: '0.9rem', lineHeight: 1.4}}>مرتب سازی</InputLabel>
+                             <Select
+                                 labelId="sort-by-label"
+                                 id="sort-by-select"
+                                 value={sortBy}
+                                 label="مرتب سازی"
+                                 onChange={handleSortChange}
+                                 variant="outlined"
+                                 sx={{fontSize: '0.9rem'}}
+                             >
+                                 {sortOptions.map(option => (
+                                     <MenuItem key={option.value} value={option.value} sx={{fontSize: '0.9rem'}}>
+                                         {option.label}
+                                     </MenuItem>
+                                 ))}
+                             </Select>
+                         </FormControl>
+                    </Box>
+
+                    {/* Content Area */}
+                    {error && (
+                        // Use your CSS class for error message
+                        <Alert severity="error" className="error-message">{error}</Alert>
+                    )}
+
+                    {/* Use div with class instead of MUI Grid container for products */}
+                    <Box className="products-grid">
+                         {loading && (
+                             Array.from({ length: PRODUCTS_PER_PAGE }).map((_, index) => (
+                                 // Use Skeleton within a div structure matching your card
+                                 <Box key={`skeleton-${index}`} className="product-card-skeleton">
+                                     <Skeleton variant="rectangular" height={180} />
+                                     <Skeleton variant="text" width="80%" sx={{ mt: 1 }} />
+                                     <Skeleton variant="text" width="40%" />
+                                     <Skeleton variant="text" width="60%" sx={{ mt: 0.5 }}/>
+                                 </Box>
+                             ))
+                         )}
+
+                        {!loading && !error && products.length === 0 && (
+                            // Use your CSS class for no products found
+                            <Box className="no-products-found">
+                                محصولی با این فیلترها یافت نشد.
+                            </Box>
+                        )}
+
+                        {!loading && !error && products.length > 0 && (
+                            products.map((product) => (
+                                product && product.id ? (
+                                    // Render ProductCard directly
+                                    <ProductCard key={product.id} product={product} />
+                                ) : null                            ))
+                        )}
+                    </Box> {/* End products-grid */}
+
+                    {/* Pagination */}
+                    {!loading && !error && totalPages > 1 && (
+                        <Box sx={{ display: 'flex', justifyContent: 'center', p: 2, mt: 2 }}>
+                            <MuiPagination
+                                count={totalPages}
+                                page={currentPage}
+                                onChange={handlePageChange}
+                                color="primary"
+                                shape="rounded"
+                            />
+                        </Box>
+                    )}
+                </Box> {/* End Main Content Column */}
+            </Box> {/* End Page Content Container */}
+
+            {/* Back to Top Button */}
+            <IconButton
+                 onClick={scrollTop}
+                 className={`back-to-top ${showScroll ? 'visible' : ''}`} // Use classes from CSS
+                 aria-label="scroll back to top"
+            >
+                <ArrowUpwardIcon />
+            </IconButton>
+
+        </Container> // End shop-page-container
+    );};
 
 export default MenProducts;

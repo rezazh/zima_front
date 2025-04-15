@@ -1,191 +1,196 @@
+/* src/pages/menproducts.css - کد شما با توضیحات */
+
+/* Base container styling */
 .shop-page-container {
-  max-width: 1200px; /* یا عرض دلخواه شما */
+  /* max-width: 1300px; /* You can set a max-width */
   margin: 0 auto;
-  padding: 20px 15px;
-  font-family: 'Vazirmatn', sans-serif; /* فونت مناسب فارسی */
-  direction: rtl; /* راست‌چین */
-  background-color: #f8f9fa; /* رنگ پس‌زمینه کلی صفحه مانند تصویر */
+  padding: 15px; /* Consistent padding */
+  font-family: 'Vazirmatn', sans-serif; /* Ensure font is loaded */
+  direction: rtl;
+  background-color: #f8f9fa;
+  min-height: 100vh; /* Ensure it takes full height */
 }
 
 .breadcrumb-container {
-  margin-bottom: 25px;
-  padding: 10px 0;
-  border-bottom: 1px solid #e0e0e0;
-  font-size: 14px;
+  margin-bottom: 20px; /* Slightly reduced margin */
+  padding: 8px 0;
+  border-bottom: 1px solid #e0e0e0;  font-size: 0.875rem; /* Standard body2 size */
 }
 
+/* Main layout using simple flexbox */
 .page-content-container {
   display: flex;
-  gap: 30px; /* فاصله بین ستون فیلتر و محتوا */
+  flex-direction: row; /* Default, sidebar left */
+  gap: 24px; /* Space between columns */
 }
 
 .filters-column {
-  width: 280px; /* عرض ثابت برای سایدبار فیلتر */
-  flex-shrink: 0; /* جلوگیری از کوچک شدن سایدبار */
+  width: 260px; /* Slightly narrower? Adjust as needed */
+  flex-shrink: 0;
+  /* Background/border can be applied here or via Paper in JS */
+  background-color: #fff; /* White background for filter area */
+  border: 1px solid #e0e0e0;  border-radius: 8px;
+  padding: 10px; /* Padding inside the filter column */
+  height: fit-content; /* Make it only as tall as needed */
+  position: sticky; /* Make it sticky */
+  top: 20px; /* Sticky offset */
 }
 
 .main-content-column {
-  flex-grow: 1; /* ستون محتوا فضای باقی‌مانده را بگیرد */
+  flex-grow: 1;
+  min-width: 0; /* Prevent content from overflowing */
 }
 
-/* نوار ابزار */
+/* Toolbar */
 .toolbar {
   display: flex;
-  justify-content: space-between;
+  justify-content: space-between; /* Space between count and sort */
   align-items: center;
   margin-bottom: 20px;
-  padding: 10px;
+  padding: 8px 12px; /* Adjusted padding */
   background-color: #fff;
   border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-  flex-wrap: wrap; /* برای واکنش‌گرایی */
+  border: 1px solid #e0e0e0; /* Border like sharrgh */
+  /* box-shadow: 0 1px 3px rgba(0,0,0,0.05); */
+  flex-wrap: wrap;
   gap: 10px;
 }
 
-.sort-options {
-  display: flex;
-  align-items: center;
-  gap: 8px; /* فاصله بین دکمه‌های مرتب‌سازی */
-   flex-wrap: wrap;
-}
-.sort-label {
-  font-size: 14px;
-  color: #555;
-  margin-left: 8px; /* فاصله از اولین دکمه */
-}.sort-button {
-  background-color: transparent;
-  border: none;  /* border: 1px solid #ddd; */
-  padding: 6px 12px;
-  border-radius: 20px; /* گرد کردن دکمه‌ها */
-  cursor: pointer;
-  font-size: 13px;
-  color: #333;
-  transition: all 0.2s ease;
-}
-
-.sort-button:hover {
-  background-color: #f0f0f0;
-}
-
-.sort-button.active {
-  background-color: #e7f1ff; /* آبی خیلی کم‌رنگ */
-  color: #0d6efd; /* رنگ آبی اصلی */
-  font-weight: 600;
-}
+/* Remove .sort-options and .sort-button if using MUI Select */
+/* .sort-options { ... } */
+/* .sort-label { ... } */
+/* .sort-button { ... } */
+/* .sort-button:hover { ... } */
+/* .sort-button.active { ... } */
 
 .product-count {
-    font-size: 13px;
-    color: #666;
-    margin-right: auto; /* انتقال به سمت چپ در حالت عادی */
-    padding-left: 10px;
+    font-size: 0.9rem; /* Slightly adjusted size */
+    font-weight: 500;
+    color: #333;
+    /* No margin needed if using space-between in toolbar */
 }
 
 
-/* گرید محصولات */
+/* Products Grid (Using CSS Grid) */
 .products-grid {
   display: grid;
-  /* ستون‌ها بر اساس تصویر (حدود 4 ستون) */  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* تنظیم عرض کمینه کارت */
-  gap: 20px;
+  /* Adjust minmax for desired card size and responsiveness */
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); /* Target ~4 columns */
+  gap: 16px; /* Adjust gap */
   margin-bottom: 30px;
 }
 
-/* استایل برای حالت عدم وجود محصول */
+/* No products found message styling */
 .no-products-found {
-  grid-column: 1 / -1; /* کل عرض گرید را بگیرد */
+  grid-column: 1 / -1; /* Span all grid columns */
   text-align: center;
-  padding: 40px 20px;
+  padding: 50px 20px;
   color: #777;
-  font-size: 16px;
+  font-size: 1rem;
   background-color: #fff;
   border-radius: 8px;
+  border: 1px dashed #ddd; /* Dashed border like target */
 }
 
-/* استایل اسکلت لودینگ */
+/* Product Card Skeleton container */
 .product-card-skeleton {
   background-color: #fff;
-  border: 1px solid #eee;
+  border: 1px solid #f0f0f0;
   border-radius: 8px;
-  padding: 10px;
+  padding: 10px; /* Padding to simulate card structure */
   overflow: hidden;
 }
 
-/* لینک فوتر */
-.footer-link {
-  text-align: center;
-  margin-top: 40px;
-  padding: 15px;
-  font-size: 14px;
-  color: #666;
-  border-top: 1px solid #eee;
-}
-/* دکمه بازگشت به بالا */
-.back-to-top {
-    position: fixed;
-    bottom: 20px;
-    left: 20px; /* تنظیم موقعیت در سمت چپ */
-    background-color: #0d6efd;
-    color: white;
-    border: none;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;    font-size: 18px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    z-index: 1000;
-    opacity: 0; /* مخفی در ابتدا */
-    transition: opacity 0.3s ease;
-}
 
-/* نمایش دکمه وقتی اسکرول می‌شود (نیاز به جاوااسکریپت دارد) */
-.back-to-top.visible {
-    opacity: 1;
-}
-
+/* Error message styling */
 .error-message {
-    background-color: #f8d7da;
-    color: #721c24;
-    border: 1px solid #f5c6cb;
+    /* Using Alert component from MUI, styling can be done via sx or theme */
+    /* background-color: #f8d7da; ... */
+    /* color: #721c24; ... */
+    /* border: 1px solid #f5c6cb; ... */
     padding: 15px;
     border-radius: 8px;
     margin-bottom: 20px;
     text-align: center;
 }
 
+/* Back to top button styling */
+.back-to-top {
+    position: fixed;
+    bottom: 25px;
+    left: 25px; /* Position left */
+    background-color: rgba(0, 0, 0, 0.6); /* Darker background like target */
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    font-size: 20px; /* Adjust icon size */
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    z-index: 1000;
+    opacity: 0; /* Hidden initially */
+    visibility: hidden; /* Hide completely */
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
 
-/* Media Query برای موبایل (مثال) */
-@media (max-width: 768px) {
-  .page-content-container {
-    flex-direction: column;  }
+.back-to-top.visible {
+    opacity: 1;
+    visibility: visible; /* Make visible */
+}
+.back-to-top:hover {
+    background-color: rgba(0, 0, 0, 0.8); /* Darken on hover */
+}
+
+
+/* --- Responsive Adjustments --- *//* Tablet and smaller */
+@media (max-width: 992px) {    .products-grid {
+        grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); /* 3 columns maybe */
+    }
+     .filters-column {
+        width: 230px; /* Slightly narrower */
+    }
+}
+
+/* Mobile */
+@media (max-width: 768px) {  .page-content-container {
+    flex-direction: column; /* Stack columns */
+  }
 
   .filters-column {
-    width: 100%;
+    width: 100%; /* Full width */
     margin-bottom: 20px;
-  }
+    position: static; /* Remove sticky on mobile */
+    height: auto;  }
+
    .toolbar {
-        flex-direction: column;
-        align-items: stretch;
+        flex-direction: column; /* Stack toolbar items */
+        align-items: stretch; /* Stretch items */
+        gap: 15px;
     }
-   .sort-options {
-        justify-content: center;
-        margin-bottom: 10px;
+    /* Center sort dropdown on mobile */
+    .toolbar .MuiFormControl-root {
+        min-width: 100%; /* Full width */
+        margin: 0;
     }
     .product-count {
-        text-align: center;
-        margin: 0;
-        padding: 0;
+        text-align: center; /* Center product count */
+        width: 100%;
     }
+
   .products-grid {
-      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); /* کارت‌های کوچکتر */
-      gap: 15px;
-  }
-    .back-to-top {
+      /* 2 columns on mobile */
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 12px;
+  }    .back-to-top {
         bottom: 15px;
         left: 15px;
         width: 35px;
         height: 35px;
-        font-size: 16px;
+    }    .breadcrumb-container {
+        font-size: 0.8rem; /* Smaller breadcrumbs */
     }
 }

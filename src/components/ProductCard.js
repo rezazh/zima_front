@@ -1,99 +1,69 @@
-// src/components/ProductCard.js
 import React from 'react';
-import { Link } from 'react-router-dom'; // برای لینک به صفحه جزئیات
-import '../styles/ProductCard.css'; // اطمینان از import کردن استایل‌ها
-
-const PLACEHOLDER_IMAGE = '/images/placeholder.jpg';
+import { Card, CardActionArea, CardMedia, CardContent, Typography, Box, Chip } from '@mui/material';import { Link as RouterLink } from 'react-router-dom';
+// import '../styles/ProductCard.css'; // Add styles if needed
 
 const ProductCard = ({ product }) => {
-  if (!product || typeof product !== 'object') {
-    console.warn("ProductCard received invalid product prop:", product);    return null;
-  }
+    if (!product) {
+        return null; // Or return a Skeleton
+    }
 
-  const productName = product.name || 'نام محصول نامشخص';
-  const colors = Array.isArray(product.colors) ? product.colors : [];
-  const originalPrice = typeof product.price === 'number' ? product.price : 0;
-  const discountedPriceValue = typeof product.discount_price === 'number' ? product.discount_price : null;
-  const imageUrl = product.image || PLACEHOLDER_IMAGE;
-  const brand = product.brand || '';
-  const isInStock = product.in_stock === true;  // *** تعریف productUrl در اینجا ***
-  const productUrl = `/product/${product.id}`; // مطمئن شوید route شما به این شکل است
+    const formatPrice = (price) => {
+        return price ? price.toLocaleString('fa-IR') : 'نامشخص';
+    };
 
-
-  let displayPrice = originalPrice;
-  let actualOriginalPrice = null;
-  if (discountedPriceValue !== null && discountedPriceValue < originalPrice) {
-      displayPrice = discountedPriceValue;      actualOriginalPrice = originalPrice;
-  }
-
-  let discountPercent = null;
-  if (actualOriginalPrice && displayPrice < actualOriginalPrice && actualOriginalPrice > 0) {
-    discountPercent = Math.round(((actualOriginalPrice - displayPrice) / actualOriginalPrice) * 100);
-  }
-
-  const formatPrice = (price) => {
-    if (typeof price !== 'number') return '۰';
-    return price.toLocaleString('fa-IR');
-  };
-
-  return (
-    <div className={`product-card ${!isInStock ? 'out-of-stock' : ''}`}>
-      {/* استفاده از productUrl تعریف شده */}
-      <Link to={productUrl} className="product-image-link">
-        <div className="product-image-wrapper">
-          <img
-            loading="lazy"
-            src={imageUrl}
-            alt={productName}
-            className="product-image"
-            onError={(e) => {
-              if (e.target.src !== PLACEHOLDER_IMAGE) {
-                e.target.onerror = null;
-                e.target.src = PLACEHOLDER_IMAGE;
-              }
-            }}
-          />
-          {discountPercent && discountPercent > 0 && (
-            <span className="discount-percent-badge">٪{discountPercent}</span>
-          )}
-          {!isInStock && (
-            <span className="out-of-stock-badge">ناموجود</span>
-          )}
-        </div>
-      </Link>
-
-      <div className="product-info">        {brand && <p className="product-brand">{brand}</p>}
-
-        {/* استفاده از productUrl تعریف شده */}
-        <Link to={productUrl} className="product-title-link">
-          <h3 className="product-title" title={productName}>{productName}</h3>
-        </Link>
-
-        <div className="price-container">
-          {actualOriginalPrice ? (
-            <>
-              <span className="discount-price">{formatPrice(displayPrice)} تومان</span>
-              <span className="original-price">{formatPrice(actualOriginalPrice)} تومان</span>
-            </>
-          ) : (
-            <span className="price">{formatPrice(displayPrice)} تومان</span>
-          )}        </div>
-
-        {colors.length > 0 && (
-          <div className="product-colors">
-            {colors.slice(0, 5).map((color, index) => (
-              <span
-                key={`${product.id}-color-${index}`}
-                className="color-dot"
-                title={color}
-                style={{ backgroundColor: String(color).toLowerCase() }}
-              />
-            ))}
-          </div>
-        )}
-      </div>
-    </div>
-  );
-};
+    return (
+        <Card elevation={0} sx={{ border: '1px solid #eee', height: '100%', display: 'flex', flexDirection: 'column' }}>
+            <CardActionArea component={RouterLink} to={`/product/${product.id}`} sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}> {/* Adjust link as needed */}
+                <CardMedia
+                    component="img"
+                    height="200" // Adjust height as needed
+                    image={product.imageUrl || "https://via.placeholder.com/300x400?text=No+Image"}
+                    alt={product.name}
+                    sx={{ objectFit: 'contain', p: 1 }} // Use contain to show full image maybe
+                />
+                <CardContent sx={{ pt: 1, pb: 0.5, width: '100%', flexGrow: 1 }}>
+                    {product.brand && (
+                        <Typography variant="caption" color="text.secondary" display="block" noWrap sx={{ mb: 0.5 }}>
+                            {product.brand}
+                        </Typography>
+                    )}
+                    <Typography gutterBottom variant="body2" component="h3" noWrap sx={{ fontWeight: 500, minHeight: '2.5em' }}> {/* Ensure enough height for 2 lines */}
+                        {product.name}
+                    </Typography>                    {/* Display available color swatches */}
+                    {product.availableColors && product.availableColors.length > 0 && (
+                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mt: 0.5, minHeight: '20px' }}>
+                            {product.availableColors.slice(0, 5).map((color) => ( // Limit shown colors
+                                <Box
+                                    key={color.code}
+                                    sx={{
+                                        width: 16,
+                                        height: 16,
+                                        borderRadius: '50%',
+                                        backgroundColor: color.code,
+                                        border: color.code === '#FFFFFF' ? '1px solid #ccc' : 'none',
+                                        display: 'inline-block',
+                                    }}                                    title={color.name}
+                                />
+                            ))}
+                        </Box>
+                    )}
+                </CardContent>
+            </CardActionArea>
+             {/* Price Section (outside ActionArea if needed) */}
+            <Box sx={{ p: 1.5, pt: 0 }}>
+                {product.price_max && product.discountPercent > 0 && ( // Show discount
+                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 0.5 }}>
+                        <Chip label={`${product.discountPercent}%`} color="error" size="small" sx={{ height: 'auto', '& .MuiChip-label': { p: '1px 4px'} }}/>
+                        <Typography variant="caption" color="text.secondary" sx={{ textDecoration: 'line-through' }}>
+                            {formatPrice(product.price_max)}
+                        </Typography>
+                    </Box>
+                )}
+                <Typography variant="subtitle1" color="primary.main" sx={{ fontWeight: 'bold', textAlign: 'left' }}>
+                    {formatPrice(product.price_min)} <Typography variant="caption" component="span">تومان</Typography>
+                </Typography>
+            </Box>
+        </Card>
+    );};
 
 export default ProductCard;
